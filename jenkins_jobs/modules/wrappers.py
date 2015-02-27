@@ -1308,6 +1308,93 @@ def xvnc(parser, xml_parent, data):
         data.get('xauthority', True)).lower()
 
 
+def xvfb(parser, xml_parent, data):
+    """yaml: xvfb
+    Enable xvfb during the build.
+    Requires the Jenkins `xvfb plugin.
+    <https://wiki.jenkins-ci.org/display/JENKINS/Xvfb+Plugin>`_
+
+    :arg str installationName: The name of the Xvfb tool instalation that
+                               Jenkins administrator set up.
+                               (default: default)
+    :arg bool autoDisplayName: Uses the -displayfd option of Xvfb by which it
+                               chooses it's own display name by scanning for
+                               an available one. This option requires a recent
+                               version of xserver, check your installation
+                               for support.
+                               (default: false)
+    :arg str displayName: Ordinal of the display Xvfb will be running on, if
+                          left empty (default) choosen based on current build
+                          executor number. Use only if you know what you're
+                          doing, could leed to clashes with other builds.
+    :arg str assignedLabels: If you want to start Xvfb only on specific nodes
+                             specify its name or label.
+                             (default: )
+    :arg bool parallelBuild: When running multiple Jenkins nodes on the same
+                             machine this setting influences the display number
+                             generation. The display number will be based upon
+                             node position in the list of nodes multiplied
+                             by 100 to which current executor number and any
+                             given offset will be added. Using this with offset
+                             set to 0 there is a limit of 595 nodes and
+                             35 executors on a node, having more nodes or
+                             executors is not compatible with this option.
+                             (default: false)
+    :arg str timeout: A timeout of given seconds to wait before returning
+                      control to the job, this allows Xvfb to start before
+                      there is a need for it. By default set to 0, not to delay
+                      the build, since it usualy takes just a few seconds
+                      for Xvfb to start, and outputting to display is not the
+                      first thing a job does.
+                      (default: 0)
+    :arg str screen: Resolution and color depth of the created virtual frame
+                     buffer in the format WxHxD.
+                     (default: 1024x768x24)
+    :arg str displayNameOffset: Offset for display names, default is 1. Display
+                                names are taken from build executor's number,
+                                i.e. if the build is performed by executor 4,
+                                and offset is 100, display name will be 104.
+                                (default: 1)
+    :arg str additionalOptions: Additional options to be added with the options
+                                above to the Xvfb command line.
+                                (default: )
+    :arg bool debug: If Xvfb output should appear in console log of this job,
+                     useful only if debugging Xvfb interaction.
+                     (default: false)
+    :arg bool shutdownWithBuild: Should the display be kept until the whole job
+                                 ends (including the post build steps).
+                                 (default: false)
+    Example:
+
+    .. literalinclude:: /../../tests/wrappers/fixtures/xvfb001.yaml
+
+    """
+    xwrapper = XML.SubElement(xml_parent,
+                              'org.jenkinsci.plugins.xvfb.XvfbBuildWrapper')
+    XML.SubElement(xwrapper, 'installationName').text = str(data.get(
+        'installationName', 'default'))
+    XML.SubElement(xwrapper, 'autoDisplayName').text = str(data.get(
+        'autoDisplayName', False)).lower()
+    display_name = str(data.get('displayName', ''))
+    if display_name:
+        XML.SubElement(xwrapper, 'displayName').text = display_name
+    XML.SubElement(xwrapper, 'assignedLabels').text = str(data.get(
+        'assignedLabels', ''))
+    XML.SubElement(xwrapper, 'parallelBuild').text = str(data.get(
+        'parallelBuild', False)).lower()
+    XML.SubElement(xwrapper, 'timeout').text = str(data.get('timeout', '0'))
+    XML.SubElement(xwrapper, 'screen').text = str(data.get(
+        'screen', '1024x768x24'))
+    XML.SubElement(xwrapper, 'displayNameOffset').text = str(data.get(
+        'displayNameOffset', '1'))
+    XML.SubElement(xwrapper, 'additionalOptions').text = str(data.get(
+        'additionalOptions', ''))
+    XML.SubElement(xwrapper, 'debug').text = str(data.get(
+        'debug', False)).lower()
+    XML.SubElement(xwrapper, 'shutdownWithBuild').text = str(data.get(
+        'shutdownWithBuild', False)).lower()
+
+
 class Wrappers(jenkins_jobs.modules.base.Base):
     sequence = 80
 
