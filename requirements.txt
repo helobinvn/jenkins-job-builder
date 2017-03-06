@@ -1,6 +1,7 @@
 argparse
 ordereddict
 six>=1.5.2
+stevedore=1.20.0
 PyYAML
 python-jenkins>=0.4.1
 pbr>=0.8.2,<=2.0
